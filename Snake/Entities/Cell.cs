@@ -24,15 +24,15 @@ namespace Snake {
         }
         
         public void Go() {
-            if(X < 0 || X >= WIDTH_CELLS) {
+            if(X < 0 || X >= WidthSize) {
                 Die = true;
                 return;
             }
-            if(Y < 0 || Y >= HEIGHT_CELLS) {
+            if(Y < 0 || Y >= HeightSize) {
                 Die = true;
                 return;
             }
-            label.Location = new Point(X * CELL_SIZE, Y * CELL_SIZE);
+            label.Location = new Point(X * CellSize, Y * CellSize);
         }
 
 
@@ -52,6 +52,12 @@ namespace Snake {
 
         public bool Collision (int x, int y) {
             return X == x && Y == y;
+        }
+
+        public void Rewrite() {
+            label.Width = CellSize;
+            label.Height = CellSize;
+            Go();
         }
     }
 }
