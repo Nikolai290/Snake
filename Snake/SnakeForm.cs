@@ -24,6 +24,7 @@ namespace Snake {
             HeightSizeInput.Text = HeightSize.ToString();
             CellSizeInput.Text = CellSize.ToString();
             GameSpeedInput.Text = GameSpeed.ToString();
+            ExceptionLabel.Text = "";
 
             RecreateField();
             timer1.Stop();
@@ -35,6 +36,7 @@ namespace Snake {
         private void StartButton_Click(object sender, EventArgs e) {
             Counter = 0;
             CounterLabel.Text = Counter.ToString();
+            ExceptionLabel.Text = "";
 
             SpawnFood();
             SpawnSnake();
@@ -111,9 +113,6 @@ namespace Snake {
             }
         }
 
-        #endregion
-
-        #region Methods
         private void GameSpeedInput_TextChanged(object sender, EventArgs e) {
             try {
                 int.TryParse(GameSpeedInput.Text, out int value);
@@ -128,6 +127,11 @@ namespace Snake {
             }
         }
 
+        #endregion
+
+        #region Methods
+
+
         private bool CheckFoodCollision() {
             return snake.First().Collision(food.X, food.Y);
         }
@@ -138,6 +142,7 @@ namespace Snake {
 
         private bool CheckSnakeCollision() {
             var head = snake.First();
+            head.label.BringToFront();
             if (snake.Any(x => x != head && x.Collision(head.X, head.Y))) {
                 return true;
             }
@@ -211,19 +216,31 @@ namespace Snake {
         }
 
         private void MoveSnake() {
+            if (way.Count > 0) {
+                DropOldWay();
+            }
+            if (Control != Control.ManualControl) {
+                try {
+                    AiControl();
+                } catch (StackOverflowException e) {
+                    ExceptionLabel.Text = e.Message;
+                }
+            }
             var increase = CheckFoodCollision();
-            int xMem = snake.Last().X;
-            int yMem = snake.Last().Y;
+            var lastCoord = snake.Last().Coord;
+            Point prevCoord = new Point();
+            for (var i = 0; i < snake.Count; i++) {
+                var tmp = snake[i].Coord;
 
-            for (var i = snake.Count - 1; i >= 0; i--) {
                 if (i == 0) {
                     snake[i].Go(direction);
                 } else {
-                    snake[i].Go(snake[i - 1].X, snake[i - 1].Y);
+                    snake[i].Go(prevCoord);
                 }
+                prevCoord = tmp;
             }
             if (increase) {
-                snake.Add(SpawnCell(BodyColor, xMem, yMem));
+                snake.Add(SpawnCell(BodyColor, lastCoord.X, lastCoord.Y));
                 Counter++;
                 CounterLabel.Text = Counter.ToString();
                 SpawnFood();
@@ -231,21 +248,14 @@ namespace Snake {
             if (CheckWallCollision() || CheckSnakeCollision()) {
                 timer1.Stop();
             }
-            if (way.Count > 0) {
-                DropOldWay();
-            }
-            if (Control != Control.ManualControl) {
-                AiControl();
-            }
+
         }
 
         private void AiControl() {
             var nodes = GenerateMatrix();
             var nodesWay = Ai.FindWay(nodes);
-
             var head = nodesWay.SingleOrDefault(x => x.NodeType == NodeType.Head);
             AiControlChangeDirection(head);
-
             var way = nodesWay.Where(x => x.NodeType == NodeType.Way);
             ShowWay(way);
         }
@@ -311,8 +321,8 @@ namespace Snake {
                 var x = i % WidthSize;
                 var y = i / WidthSize;
                 var node = nodes[i];
-                var bottomNeighborIndex = y < HeightSize-1 ? (y + 1) * WidthSize + x : -1;
-                var rightNeighborIndex = x < WidthSize-1 ? y * WidthSize + x + 1 : -1;
+                var bottomNeighborIndex = y < HeightSize - 1 ? (y + 1) * WidthSize + x : -1;
+                var rightNeighborIndex = x < WidthSize - 1 ? y * WidthSize + x + 1 : -1;
                 var topNeighborIndex = y > 0 ? (y - 1) * WidthSize + x : -1;
                 var leftNeighborIndex = x > 0 ? y * WidthSize + x - 1 : -1;
 

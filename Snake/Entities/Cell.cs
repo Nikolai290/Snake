@@ -9,6 +9,7 @@ namespace Snake {
         public Label label { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
+        public Point Coord { get => new Point(X, Y); }
 
         public bool Die { get; set; } = false;
 
@@ -35,6 +36,15 @@ namespace Snake {
             label.Location = new Point(X * CellSize, Y * CellSize);
         }
 
+        public void Go(Point to) {
+            SetCoord(to);
+            Go();
+        }
+
+        public void SetCoord(Point coord) {
+            X = coord.X;
+            Y = coord.Y;
+        }
 
         public void Go(Direction direction) {
             if(direction == Direction.Up) {

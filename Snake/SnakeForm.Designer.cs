@@ -44,6 +44,7 @@ namespace Snake {
             this.CellSizeInput = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.ExceptionLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -111,6 +112,7 @@ namespace Snake {
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.ExceptionLabel);
             this.groupBox3.Controls.Add(this.DijkstraControlRb);
             this.groupBox3.Controls.Add(this.ManualControlRb);
             this.groupBox3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -255,6 +257,16 @@ namespace Snake {
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
+            // ExceptionLabel
+            // 
+            this.ExceptionLabel.AutoSize = true;
+            this.ExceptionLabel.ForeColor = System.Drawing.Color.DarkRed;
+            this.ExceptionLabel.Location = new System.Drawing.Point(3, 242);
+            this.ExceptionLabel.Name = "ExceptionLabel";
+            this.ExceptionLabel.Size = new System.Drawing.Size(169, 21);
+            this.ExceptionLabel.TabIndex = 2;
+            this.ExceptionLabel.Text = "Exeption message here";
+            // 
             // SnakeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -294,6 +306,7 @@ namespace Snake {
         private System.Windows.Forms.RadioButton DijkstraControlRb;
         private System.Windows.Forms.RadioButton ManualControlRb;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label ExceptionLabel;
     }
 }
 

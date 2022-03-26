@@ -12,7 +12,8 @@ namespace Snake.DijkstraControl {
         /// </summary>
         public IList<Node> Neighbors { get; set; } = new List<Node>(4);
 
-        public int? Value { get; set; }
+        public int Value { get; set; } = int.MaxValue;
         public NodeType NodeType { get; set; }
+        public bool Visited { get; set; }
     }
 }
