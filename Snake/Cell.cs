@@ -1,7 +1,7 @@
 ﻿
 using System.Drawing;
 using System.Windows.Forms;
-using static Snake.Constants;
+using static Snake.Settings;
 
 namespace Snake {
     public class Cell {
