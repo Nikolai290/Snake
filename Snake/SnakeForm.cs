@@ -78,7 +78,7 @@ namespace Snake {
             try {
                 int.TryParse(CellSizeInput.Text, out int value);
 
-                if (value > 1 && value <= 40) {
+                if (value > 0 && value <= 40) {
                     CellSize = value;
                 }
             } catch {
@@ -91,7 +91,7 @@ namespace Snake {
             try {
                 int.TryParse(WidthSizeInput.Text, out int value);
 
-                if (value > 1 && value <= 100) {
+                if (value > 0 && value <= 100) {
                     WidthSize = value;
                 }
             } catch {
@@ -104,7 +104,7 @@ namespace Snake {
             try {
                 int.TryParse(HeightSizeInput.Text, out int value);
 
-                if (value > 1 && value <= 100) {
+                if (value > 0 && value <= 100) {
                     HeightSize = value;
                 }
             } catch {
@@ -117,7 +117,7 @@ namespace Snake {
             try {
                 int.TryParse(GameSpeedInput.Text, out int value);
 
-                if (value > 0 && value <= 100) {
+                if (value > 0 && value <= 1000) {
                     GameSpeed = value;
                     timer1.Interval = 1000 / GameSpeed;
                 }
@@ -216,6 +216,9 @@ namespace Snake {
         }
 
         private void MoveSnake() {
+            if (CheckWallCollision() || CheckSnakeCollision()) {
+                timer1.Stop();
+            }
             if (way.Count > 0) {
                 DropOldWay();
             }
@@ -227,6 +230,11 @@ namespace Snake {
                 }
             }
             var increase = CheckFoodCollision();
+            if (increase) {
+                Counter++;
+                CounterLabel.Text = Counter.ToString();
+                SpawnFood();
+            }
             var lastCoord = snake.Last().Coord;
             Point prevCoord = new Point();
             for (var i = 0; i < snake.Count; i++) {
@@ -241,12 +249,6 @@ namespace Snake {
             }
             if (increase) {
                 snake.Add(SpawnCell(BodyColor, lastCoord.X, lastCoord.Y));
-                Counter++;
-                CounterLabel.Text = Counter.ToString();
-                SpawnFood();
-            }
-            if (CheckWallCollision() || CheckSnakeCollision()) {
-                timer1.Stop();
             }
 
         }
@@ -256,8 +258,9 @@ namespace Snake {
             var nodesWay = Ai.FindWay(nodes);
             var head = nodesWay.SingleOrDefault(x => x.NodeType == NodeType.Head);
             AiControlChangeDirection(head);
-            var way = nodesWay.Where(x => x.NodeType == NodeType.Way);
-            ShowWay(way);
+            var way = nodes.Where(x => x.NodeType == NodeType.Empty);
+
+            // ShowWay(way);
         }
 
         private void ShowWay(IEnumerable<Node> way) {
@@ -277,10 +280,40 @@ namespace Snake {
 
         private void AiControlChangeDirection(Node node) {
             if (node == null) return;
-            var nextCell = node.Neighbors.FirstOrDefault(x => x?.NodeType == NodeType.Way);
-            if (nextCell == null) return;
+            var min = node.Neighbors
+                .Where(x => x != null)
+                .Where(x => x.NodeType == NodeType.Empty || x.NodeType == NodeType.Food)
+                .Select(x => x.Value)
+                .Min();
+            var nextCell = node.Neighbors
+                .Where(x => x != null)
+                .Where(x => x.Value <= min)
+                .First();
             var index = node.Neighbors.IndexOf(nextCell);
             ChangeDirection(index);
+            SafeFromWalls();
+            //direction = (Direction)index;
+        }
+
+        private void SafeFromWalls() {
+            var detector = SpawnCell(Color.Aqua, 0, 0);
+            detector.Go(snake.First().Coord);
+            detector.Go(direction);
+            if (detector.Die) {
+                SafeTurn();
+            }
+
+            detector.label.Dispose();
+        }
+
+        private void SafeTurn() {
+            var head = snake.First();
+            if (direction == Direction.Left || direction == Direction.Rigth) {
+                ;
+                direction = Direction.Up;
+            } else {
+                direction = Direction.Rigth;
+            }
         }
 
         private IList<Node> GenerateMatrix() {
@@ -321,24 +354,25 @@ namespace Snake {
                 var x = i % WidthSize;
                 var y = i / WidthSize;
                 var node = nodes[i];
-                var bottomNeighborIndex = y < HeightSize - 1 ? (y + 1) * WidthSize + x : -1;
-                var rightNeighborIndex = x < WidthSize - 1 ? y * WidthSize + x + 1 : -1;
                 var topNeighborIndex = y > 0 ? (y - 1) * WidthSize + x : -1;
+                var rightNeighborIndex = x < WidthSize - 1 ? y * WidthSize + x + 1 : -1;
+                var bottomNeighborIndex = y < HeightSize - 1 ? (y + 1) * WidthSize + x : -1;
                 var leftNeighborIndex = x > 0 ? y * WidthSize + x - 1 : -1;
 
                 node.Neighbors = new List<Node> {
-                    topNeighborIndex > 0 ? nodes[topNeighborIndex] : null,
-                    rightNeighborIndex > 0 ? nodes[rightNeighborIndex] : null,
-                    bottomNeighborIndex > 0 ? nodes[bottomNeighborIndex] : null,
-                    leftNeighborIndex> 0 ? nodes[leftNeighborIndex] : null,
+                    topNeighborIndex >= 0 ? nodes[topNeighborIndex] : null,
+                    rightNeighborIndex >= 0 ? nodes[rightNeighborIndex] : null,
+                    bottomNeighborIndex >= 0 ? nodes[bottomNeighborIndex] : null,
+                    leftNeighborIndex >= 0 ? nodes[leftNeighborIndex] : null,
                 };
             }
         }
 
         private void SpawnFood() {
+
             while (true) {
-                var newX = rnd.Next(WidthSize);
-                var newY = rnd.Next(HeightSize);
+                var newX = rnd.Next(1, WidthSize - 1);
+                var newY = rnd.Next(1, HeightSize - 1);
                 if (snake.All(x => !x.Collision(newX, newY))) {
                     if (food == null) {
                         food = SpawnCell(FoodColor, newX, newY);

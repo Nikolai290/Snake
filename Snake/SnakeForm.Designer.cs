@@ -31,6 +31,7 @@ namespace Snake {
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.ExceptionLabel = new System.Windows.Forms.Label();
             this.DijkstraControlRb = new System.Windows.Forms.RadioButton();
             this.ManualControlRb = new System.Windows.Forms.RadioButton();
             this.GameSpeedInput = new System.Windows.Forms.TextBox();
@@ -44,7 +45,6 @@ namespace Snake {
             this.CellSizeInput = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.ExceptionLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -122,6 +122,16 @@ namespace Snake {
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Алгоритм";
+            // 
+            // ExceptionLabel
+            // 
+            this.ExceptionLabel.AutoSize = true;
+            this.ExceptionLabel.ForeColor = System.Drawing.Color.DarkRed;
+            this.ExceptionLabel.Location = new System.Drawing.Point(3, 242);
+            this.ExceptionLabel.Name = "ExceptionLabel";
+            this.ExceptionLabel.Size = new System.Drawing.Size(169, 21);
+            this.ExceptionLabel.TabIndex = 2;
+            this.ExceptionLabel.Text = "Exeption message here";
             // 
             // DijkstraControlRb
             // 
@@ -250,22 +260,13 @@ namespace Snake {
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.Honeydew;
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.Location = new System.Drawing.Point(213, 14);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(5);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(400, 400);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
-            // 
-            // ExceptionLabel
-            // 
-            this.ExceptionLabel.AutoSize = true;
-            this.ExceptionLabel.ForeColor = System.Drawing.Color.DarkRed;
-            this.ExceptionLabel.Location = new System.Drawing.Point(3, 242);
-            this.ExceptionLabel.Name = "ExceptionLabel";
-            this.ExceptionLabel.Size = new System.Drawing.Size(169, 21);
-            this.ExceptionLabel.TabIndex = 2;
-            this.ExceptionLabel.Text = "Exeption message here";
             // 
             // SnakeForm
             // 

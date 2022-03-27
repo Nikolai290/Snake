@@ -1,61 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Snake.DijkstraControl {
     public class Ai {
-        private double counter = 0;
+
         public IList<Node> FindWay(IList<Node> list) {
             var nodes = list.Select(x => x).ToList();
-
-            counter = Math.Pow(nodes.Count, nodes.Count);
-            var head = nodes.SingleOrDefault(x => x.NodeType == NodeType.Head);
-            var food = nodes.SingleOrDefault(x => x.NodeType == NodeType.Food);
-            if(head == null || food == null) {
+            var head = nodes.Where(x => x.NodeType == NodeType.Head).Take(1).ToList();
+            var food = nodes.Where(x => x.NodeType == NodeType.Food).Take(1).ToList();
+            if (food == null || food.Count() == 0) {
                 return nodes;
             }
-            FindFoodFromHead(head, 0);
-            FindBestWay(food);
+            food.First().Value = 0;
+            food.First().Visited = true;
+            PreOrder(food, food.First().Value + 1);
+            //MarkWay(head);
 
             return nodes;
         }
 
-        private void FindBestWay(Node node) {
-            if (node == null) return;
-            if (node.NodeType == NodeType.Head) {
+        private void MarkWay(IEnumerable<Node> nodes) {
+            if (nodes.Count() == 0) {
                 return;
             }
-            if(node.NodeType == NodeType.Empty) {
+            var min = nodes
+                .Select(x => x.Value)
+                .Min();
+            var way = nodes.Where(x => x.NodeType == NodeType.Empty && x.Value == min);
+
+            foreach (var node in way) {
                 node.NodeType = NodeType.Way;
             }
-            var minValue = node.Neighbors.Select(x => x?.Value ?? int.MaxValue).Min();
-            var nextNode = node.Neighbors.FirstOrDefault(x => x?.Value == minValue);
-            FindBestWay(nextNode);
+
+            var neighbors = nodes
+                .SelectMany(x => x.Neighbors)
+                .Where(x => x != null && x.NodeType == NodeType.Empty && x.Value < min);
+            MarkWay(neighbors);
         }
 
-        private void FindFoodFromHead(Node node, int value, Node from = null) {
-            //TODO: repair
-            if(counter < 0) {
+        private void PreOrder(IEnumerable<Node> nodes, int value) {
+            if (nodes.Count() == 0) {
                 return;
             }
-            if (node == null) return;
-            node.Value = value;
-            if (node.NodeType == NodeType.Food) {
-                return;
+
+            var neighborsNotVisited = new HashSet<Node>(nodes.SelectMany(x => x.Neighbors))
+                .Where(x => x != null && !x.Visited! && x.Value > value).ToList();
+
+            foreach (var neighbor in neighborsNotVisited) {
+                neighbor.Value = value;
+                neighbor.Visited = true;
             }
-            if(value > node.Value) {
-                return;
-            }
-            if (node.Visited) {
-                return;
-            }
-            foreach(var neighbor in node.Neighbors) {
-                if(neighbor == from) {
-                    continue;
-                }
-                FindFoodFromHead(neighbor, value + 1, node);
-                node.Visited = true;
-            }
+
+            PreOrder(neighborsNotVisited, value + 1);
         }
     }
 }
