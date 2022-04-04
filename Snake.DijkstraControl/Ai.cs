@@ -46,7 +46,7 @@ namespace Snake.DijkstraControl {
             }
 
             var neighborsNotVisited = new HashSet<Node>(nodes.SelectMany(x => x.Neighbors))
-                .Where(x => x != null && !x.Visited! && x.Value > value).ToList();
+                .Where(x => x != null && !x.Visited! && x.Value > value && x.NodeType == NodeType.Empty).ToList();
 
             foreach (var neighbor in neighborsNotVisited) {
                 neighbor.Value = value;

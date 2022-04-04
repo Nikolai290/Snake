@@ -150,6 +150,10 @@ namespace Snake {
         }
 
         private void ChangeDirection(Keys key) {
+            if (Control != Control.ManualControl) {
+                return;
+            }
+
             switch (key) {
                 case Keys.W:
                     ChangeDirection(0);
@@ -225,16 +229,11 @@ namespace Snake {
             if (Control != Control.ManualControl) {
                 try {
                     AiControl();
-                } catch (StackOverflowException e) {
+                } catch (Exception e) {
                     ExceptionLabel.Text = e.Message;
                 }
             }
             var increase = CheckFoodCollision();
-            if (increase) {
-                Counter++;
-                CounterLabel.Text = Counter.ToString();
-                SpawnFood();
-            }
             var lastCoord = snake.Last().Coord;
             Point prevCoord = new Point();
             for (var i = 0; i < snake.Count; i++) {
@@ -249,8 +248,10 @@ namespace Snake {
             }
             if (increase) {
                 snake.Add(SpawnCell(BodyColor, lastCoord.X, lastCoord.Y));
+                Counter++;
+                CounterLabel.Text = Counter.ToString();
+                SpawnFood();
             }
-
         }
 
         private void AiControl() {
@@ -258,15 +259,31 @@ namespace Snake {
             var nodesWay = Ai.FindWay(nodes);
             var head = nodesWay.SingleOrDefault(x => x.NodeType == NodeType.Head);
             AiControlChangeDirection(head);
-            var way = nodes.Where(x => x.NodeType == NodeType.Empty);
 
-            // ShowWay(way);
+            ShowWay(nodes);
         }
 
-        private void ShowWay(IEnumerable<Node> way) {
-            foreach (var node in way) {
+        private void ShowWay(IList<Node> nodes) {
+            if (!ShowWidthsChecker.Checked) {
+                if (way.Count > 0)
+                    DropOldWay();
+                return;
+            }
+            if (way.Count != nodes.Count) {
+                DropOldWay();
+                FillWay(nodes);
+            }
+            for (var i = 0; i < way.Count; i++) {
+                var cell = way[i];
+                var node = nodes[i];
+                cell.label.Visible = node.NodeType == NodeType.Empty;
+                cell.label.Text = node.Value.ToString();
+            }
+        }
+
+        private void FillWay(IEnumerable<Node> nodes) {
+            foreach (var node in nodes) {
                 var waypoint = SpawnCell(WaypointColor, node.X, node.Y);
-                waypoint.label.Text = node.Value.ToString();
                 this.way.Add(waypoint);
             }
         }
@@ -288,33 +305,33 @@ namespace Snake {
             var nextCell = node.Neighbors
                 .Where(x => x != null)
                 .Where(x => x.Value <= min)
+                .Where(x => x.NodeType != NodeType.Body)
                 .First();
             var index = node.Neighbors.IndexOf(nextCell);
             ChangeDirection(index);
-            SafeFromWalls();
             //direction = (Direction)index;
         }
 
-        private void SafeFromWalls() {
-            var detector = SpawnCell(Color.Aqua, 0, 0);
-            detector.Go(snake.First().Coord);
-            detector.Go(direction);
-            if (detector.Die) {
-                SafeTurn();
-            }
+        //private void SafeFromWalls() {
+        //    var detector = SpawnCell(Color.Aqua, 0, 0);
+        //    detector.Go(snake.First().Coord);
+        //    detector.Go(direction);
+        //    if (detector.Die) {
+        //        SafeTurn();
+        //    }
 
-            detector.label.Dispose();
-        }
+        //    detector.label.Dispose();
+        //}
 
-        private void SafeTurn() {
-            var head = snake.First();
-            if (direction == Direction.Left || direction == Direction.Rigth) {
-                ;
-                direction = Direction.Up;
-            } else {
-                direction = Direction.Rigth;
-            }
-        }
+        //private void SafeTurn() {
+        //    var head = snake.First();
+        //    if (direction == Direction.Left || direction == Direction.Rigth) {
+        //        ;
+        //        direction = Direction.Up;
+        //    } else {
+        //        direction = Direction.Rigth;
+        //    }
+        //}
 
         private IList<Node> GenerateMatrix() {
             var lenght = WidthSize * HeightSize;
@@ -342,7 +359,6 @@ namespace Snake {
             if (snake.First().Collision(x, y)) {
                 return NodeType.Head;
             }
-
 
             return NodeType.Empty;
         }

@@ -30,6 +30,7 @@ namespace Snake {
             this.CounterLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ShowWidthsChecker = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.ExceptionLabel = new System.Windows.Forms.Label();
             this.DijkstraControlRb = new System.Windows.Forms.RadioButton();
@@ -88,6 +89,7 @@ namespace Snake {
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.ShowWidthsChecker);
             this.groupBox1.Controls.Add(this.groupBox3);
             this.groupBox1.Controls.Add(this.GameSpeedInput);
             this.groupBox1.Controls.Add(this.label6);
@@ -110,15 +112,25 @@ namespace Snake {
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Настройки";
             // 
+            // ShowWidthsChecker
+            // 
+            this.ShowWidthsChecker.AutoSize = true;
+            this.ShowWidthsChecker.Location = new System.Drawing.Point(9, 398);
+            this.ShowWidthsChecker.Name = "ShowWidthsChecker";
+            this.ShowWidthsChecker.Size = new System.Drawing.Size(149, 25);
+            this.ShowWidthsChecker.TabIndex = 15;
+            this.ShowWidthsChecker.Text = "Показывать веса";
+            this.ShowWidthsChecker.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.ExceptionLabel);
             this.groupBox3.Controls.Add(this.DijkstraControlRb);
             this.groupBox3.Controls.Add(this.ManualControlRb);
             this.groupBox3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.groupBox3.Location = new System.Drawing.Point(6, 397);
+            this.groupBox3.Location = new System.Drawing.Point(6, 466);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(199, 309);
+            this.groupBox3.Size = new System.Drawing.Size(199, 240);
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Алгоритм";
@@ -198,6 +210,7 @@ namespace Snake {
             this.RecreateButton.Text = "Пересоздать";
             this.RecreateButton.UseVisualStyleBackColor = true;
             this.RecreateButton.Click += new System.EventHandler(this.RecreateButton_Click);
+            this.RecreateButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.button1_KeyDown);
             // 
             // StopButton
             // 
@@ -209,6 +222,7 @@ namespace Snake {
             this.StopButton.Text = "Стоп";
             this.StopButton.UseVisualStyleBackColor = true;
             this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
+            this.StopButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.button1_KeyDown);
             // 
             // HeightSizeInput
             // 
@@ -308,6 +322,7 @@ namespace Snake {
         private System.Windows.Forms.RadioButton ManualControlRb;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label ExceptionLabel;
+        private System.Windows.Forms.CheckBox ShowWidthsChecker;
     }
 }
 
