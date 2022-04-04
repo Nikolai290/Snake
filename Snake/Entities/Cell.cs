@@ -64,6 +64,10 @@ namespace Snake {
             return X == x && Y == y;
         }
 
+        public bool Collision(Point coord) {
+            return Collision(coord.X, coord.Y);
+        }
+
         public void Rewrite() {
             label.Width = CellSize;
             label.Height = CellSize;

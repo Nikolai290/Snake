@@ -9,7 +9,8 @@ using static Snake.Settings;
 namespace Snake {
     public partial class SnakeForm : Form {
         public int Counter { get; set; }
-        private IList<Cell> snake { get; set; } = new List<Cell>();
+        private Queue<Cell> snake { get; set; } = new Queue<Cell>();
+        private Cell head { get; set; }
         private IList<Cell> way { get; set; } = new List<Cell>();
         private Cell food { get; set; }
         private Direction direction { get; set; } = Direction.Up;
@@ -133,7 +134,7 @@ namespace Snake {
 
 
         private bool CheckFoodCollision() {
-            return snake.First().Collision(food.X, food.Y);
+            return head.Collision(food.X, food.Y);
         }
 
         private bool CheckWallCollision() {
@@ -141,7 +142,6 @@ namespace Snake {
         }
 
         private bool CheckSnakeCollision() {
-            var head = snake.First();
             head.label.BringToFront();
             if (snake.Any(x => x != head && x.Collision(head.X, head.Y))) {
                 return true;
@@ -234,23 +234,18 @@ namespace Snake {
                 }
             }
             var increase = CheckFoodCollision();
-            var lastCoord = snake.Last().Coord;
-            Point prevCoord = new Point();
-            for (var i = 0; i < snake.Count; i++) {
-                var tmp = snake[i].Coord;
-
-                if (i == 0) {
-                    snake[i].Go(direction);
-                } else {
-                    snake[i].Go(prevCoord);
-                }
-                prevCoord = tmp;
-            }
+            var headCoord = head.Coord;
+            head.Go(direction);
             if (increase) {
-                snake.Add(SpawnCell(BodyColor, lastCoord.X, lastCoord.Y));
+                snake.Enqueue(SpawnCell(BodyColor, headCoord.X, headCoord.Y));
                 Counter++;
                 CounterLabel.Text = Counter.ToString();
                 SpawnFood();
+            }
+            if (!increase && snake.Count > 0) {
+                var cell = snake.Dequeue();
+                cell.Go(headCoord);
+                snake.Enqueue(cell);
             }
         }
 
@@ -277,7 +272,7 @@ namespace Snake {
                 var cell = way[i];
                 var node = nodes[i];
                 cell.label.Visible = node.NodeType == NodeType.Empty;
-                cell.label.Text = node.Value.ToString();
+                cell.label.Text = node.Value == int.MaxValue ? "∞" : node.Value.ToString();
             }
         }
 
@@ -309,29 +304,39 @@ namespace Snake {
                 .First();
             var index = node.Neighbors.IndexOf(nextCell);
             ChangeDirection(index);
+            SafeFromWalls();
             //direction = (Direction)index;
         }
 
-        //private void SafeFromWalls() {
-        //    var detector = SpawnCell(Color.Aqua, 0, 0);
-        //    detector.Go(snake.First().Coord);
-        //    detector.Go(direction);
-        //    if (detector.Die) {
-        //        SafeTurn();
-        //    }
+        private void SafeFromWalls() {
+            var detector = SpawnCell(Color.Aqua, 0, 0);
+            detector.Go(head.Coord);
+            detector.Go(direction);
+            if (detector.Die || snake.Any(x => x.Collision(detector.Coord))) {
+                SafeTurn(detector);
+            }
 
-        //    detector.label.Dispose();
-        //}
+            detector.label.Dispose();
+        }
 
-        //private void SafeTurn() {
-        //    var head = snake.First();
-        //    if (direction == Direction.Left || direction == Direction.Rigth) {
-        //        ;
-        //        direction = Direction.Up;
-        //    } else {
-        //        direction = Direction.Rigth;
-        //    }
-        //}
+        private void SafeTurn(Cell detector) {
+            detector.Go(head.Coord);
+            if (direction == Direction.Left || direction == Direction.Rigth) {
+                detector.Go(Direction.Up);
+                if (detector.Die || snake.Any(x => x.Collision(detector.Coord))) {
+                    direction = Direction.Down;
+                } else {
+                    direction = Direction.Up;
+                }
+            } else {
+                detector.Go(Direction.Rigth);
+                if (detector.Die || snake.Any(x => x.Collision(detector.Coord))) {
+                    direction = Direction.Left;
+                } else {
+                    direction = Direction.Rigth;
+                }
+            }
+        }
 
         private IList<Node> GenerateMatrix() {
             var lenght = WidthSize * HeightSize;
@@ -350,13 +355,13 @@ namespace Snake {
         }
 
         private NodeType GetNodeType(int x, int y) {
-            if (snake.Skip(1).Any(cell => cell.Collision(x, y))) {
+            if (snake.Any(cell => cell.Collision(x, y))) {
                 return NodeType.Body;
             }
             if (food.Collision(x, y)) {
                 return NodeType.Food;
             }
-            if (snake.First().Collision(x, y)) {
+            if (head.Collision(x, y)) {
                 return NodeType.Head;
             }
 
@@ -385,11 +390,14 @@ namespace Snake {
         }
 
         private void SpawnFood() {
-
             while (true) {
                 var newX = rnd.Next(1, WidthSize - 1);
                 var newY = rnd.Next(1, HeightSize - 1);
-                if (snake.All(x => !x.Collision(newX, newY))) {
+                if (snake.All(x => !x.Collision(newX, newY)
+                                && !x.Collision(newX + 1, newY)
+                                && !x.Collision(newX - 1, newY)
+                                && !x.Collision(newX, newY + 1)
+                                && !x.Collision(newX, newY - 1))) {
                     if (food == null) {
                         food = SpawnCell(FoodColor, newX, newY);
                     } else {
@@ -407,14 +415,20 @@ namespace Snake {
                 }
                 snake.Clear();
             }
-
-            snake = new List<Cell> { SpawnCell(HeadColor, 0, 0) };
+            if (head == null) {
+                head = SpawnCell(HeadColor, 0, 0);
+            } else {
+                head.Go(0, 0);
+            }
+            snake = new();
         }
 
         private void RecreateField() {
             pictureBox1.Width = WidthSize * CellSize;
             pictureBox1.Height = HeightSize * CellSize;
-
+            if (head != null) {
+                head.Rewrite();
+            }
             if (food == null) {
                 SpawnFood();
             }
