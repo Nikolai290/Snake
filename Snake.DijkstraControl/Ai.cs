@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace Snake.DijkstraControl {
     public class Ai {
@@ -16,28 +14,8 @@ namespace Snake.DijkstraControl {
             food.First().Value = 0;
             food.First().Visited = true;
             PreOrder(food, food.First().Value + 1);
-            //MarkWay(head);
 
             return nodes;
-        }
-
-        private void MarkWay(IEnumerable<Node> nodes) {
-            if (nodes.Count() == 0) {
-                return;
-            }
-            var min = nodes
-                .Select(x => x.Value)
-                .Min();
-            var way = nodes.Where(x => x.NodeType == NodeType.Empty && x.Value == min);
-
-            foreach (var node in way) {
-                node.NodeType = NodeType.Way;
-            }
-
-            var neighbors = nodes
-                .SelectMany(x => x.Neighbors)
-                .Where(x => x != null && x.NodeType == NodeType.Empty && x.Value < min);
-            MarkWay(neighbors);
         }
 
         private void PreOrder(IEnumerable<Node> nodes, int value) {

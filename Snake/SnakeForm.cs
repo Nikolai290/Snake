@@ -15,7 +15,7 @@ namespace Snake {
         private Cell food { get; set; }
         private Direction direction { get; set; } = Direction.Up;
         private Random rnd = new Random();
-        private Control Control { get; set; } = Control.ManualControl;
+        private Control Control { get; set; } = Control.DijkstraControl;
 
         private Ai Ai = new Ai();
 
@@ -305,7 +305,6 @@ namespace Snake {
             var index = node.Neighbors.IndexOf(nextCell);
             ChangeDirection(index);
             SafeFromWalls();
-            //direction = (Direction)index;
         }
 
         private void SafeFromWalls() {
