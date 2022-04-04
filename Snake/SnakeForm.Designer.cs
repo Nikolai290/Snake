@@ -115,6 +115,8 @@ namespace Snake {
             // ShowWidthsChecker
             // 
             this.ShowWidthsChecker.AutoSize = true;
+            this.ShowWidthsChecker.Checked = true;
+            this.ShowWidthsChecker.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ShowWidthsChecker.Location = new System.Drawing.Point(9, 398);
             this.ShowWidthsChecker.Name = "ShowWidthsChecker";
             this.ShowWidthsChecker.Size = new System.Drawing.Size(149, 25);
@@ -148,11 +150,13 @@ namespace Snake {
             // DijkstraControlRb
             // 
             this.DijkstraControlRb.AutoSize = true;
+            this.DijkstraControlRb.Checked = true;
             this.DijkstraControlRb.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.DijkstraControlRb.Location = new System.Drawing.Point(6, 59);
             this.DijkstraControlRb.Name = "DijkstraControlRb";
             this.DijkstraControlRb.Size = new System.Drawing.Size(171, 25);
             this.DijkstraControlRb.TabIndex = 1;
+            this.DijkstraControlRb.TabStop = true;
             this.DijkstraControlRb.Text = "Алгоритм Дейкстры";
             this.DijkstraControlRb.UseVisualStyleBackColor = true;
             this.DijkstraControlRb.CheckedChanged += new System.EventHandler(this.DijkstraControlRb_CheckedChanged);
@@ -160,13 +164,11 @@ namespace Snake {
             // ManualControlRb
             // 
             this.ManualControlRb.AutoSize = true;
-            this.ManualControlRb.Checked = true;
             this.ManualControlRb.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.ManualControlRb.Location = new System.Drawing.Point(6, 28);
             this.ManualControlRb.Name = "ManualControlRb";
             this.ManualControlRb.Size = new System.Drawing.Size(168, 25);
             this.ManualControlRb.TabIndex = 0;
-            this.ManualControlRb.TabStop = true;
             this.ManualControlRb.Text = "Ручное управление";
             this.ManualControlRb.UseVisualStyleBackColor = true;
             this.ManualControlRb.CheckedChanged += new System.EventHandler(this.ManualControlRb_CheckedChanged);

@@ -5,7 +5,7 @@ namespace Snake {
         public static int CellSize = 40;
         public static int WidthSize = 10;
         public static int HeightSize = 10;
-        public static int GameSpeed = 50;
+        public static int GameSpeed = 10;
 
         public static Color HeadColor = Color.RoyalBlue;
         public static Color BodyColor = Color.LightSteelBlue;
