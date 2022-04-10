@@ -3,7 +3,11 @@ using System.Linq;
 
 namespace Snake.DijkstraControl {
     public class Ai {
-
+        /// <summary>
+        /// Нахождение пути методом Дейкстры
+        /// </summary>
+        /// <param name="list">Список всех ячеек игрового поля слева направо сверху вниз построчно</param>
+        /// <returns>Список ячеек игрового поля с проставленными весами</returns>
         public IList<Node> FindWay(IList<Node> list) {
             var nodes = list.Select(x => x).ToList();
             var head = nodes.Where(x => x.NodeType == NodeType.Head).Take(1).ToList();
@@ -18,6 +22,11 @@ namespace Snake.DijkstraControl {
             return nodes;
         }
 
+        /// <summary>
+        /// Метод, производящий рекурсивный обход списка соседей каждой клетки игрового поля и проставляющий веса
+        /// </summary>
+        /// <param name="nodes">Список соседей игрового поля</param>
+        /// <param name="value">Значение веа</param>
         private void PreOrder(IEnumerable<Node> nodes, int value) {
             if (nodes.Count() == 0) {
                 return;
